@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ipoh典韦·战神军团总控台 V2.2</title>
+    <!-- META UPGRADE: PWA支持，手机可安装 -->
+    <meta name="theme-color" content="#050505">
+    <link rel="manifest" href="data:application/json,{'name':'战神军团','short_name':'51强','start_url':'.','display':'standalone','background_color':'#050505','theme_color':'#ffcc00'}">
+    <style>
+        :root {
+            --god-gold: #ffcc00;
+            --blood-red: #cc0000;
+            --obsidian: #050505;
+            --meta-blue: #0084ff;
+            --capcut-pink: #ff4785;
+        }
+        body {
+            font-family: 'Cinzel', 'Noto Sans SC', serif;
+            background: var(--obsidian);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 12px;
+            background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, transparent 70%);
+        }
+        header {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 3px double var(--god-gold);
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin: 0; font-size: 20px; color: var(--god-gold); text-shadow: 0 0 10px var(--god-gold); text-transform: uppercase; }
+       .sub-header { font-size: 8px; letter-spacing: 2px; color: #666; margin-top: 5px; }
+       .card {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #443300;
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+       .card h2 { margin: 0 0 12px; font-size: 13px; color: var(--god-gold); border-bottom: 1px solid #332200; padding-bottom: 5px; }
+       .general-selector { display: flex; gap: 8px; margin-bottom: 15px; }
+       .gen-btn {
+            flex: 1; padding: 8px; font-size: 10px; background: #111;
+            border: 1px solid #333; color: #888; cursor: pointer;
+            border-radius: 4px; transition: 0.3s;
+        }
+       .gen-btn.active { border-color: var(--god-gold); color: var(--god-gold); background: rgba(255, 204, 0, 0.1); }
+       .script-area { background: #000; padding: 12px; border-radius: 4px; border: 1px inset #221100; }
+        textarea {
+            width: 100%; height: 60px; background: transparent; color: #fff;
+            border: none; font-family: monospace; font-size: 12px;
+            resize: none; outline: none;
+        }
+        input[type=text], input[type=password] {
+            width:100%; background:#111; border:1px solid #333; color:#fff; padding:8px; margin-bottom:10px; box-sizing: border-box;
+        }
+       .divine-btn {
+            background: linear-gradient(to bottom, #443300, #221100);
+            color: var(--god-gold); border: 1px solid var(--god-gold);
+            padding: 12px; width: 100%; font-weight: 900; cursor: pointer;
+            text-transform: uppercase; font-size: 12px; margin-top: 10px;
+        }
+       .divine-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        #chat-window {
+            height: 180px; overflow-y: auto; background: #000;
+            padding: 10px; font-size: 10px; display: flex;
+            flex-direction: column; gap: 8px;
+        }
+       .msg { padding: 8px; border-radius: 2px; }
+       .msg-meta { background: rgba(0, 132, 255, 0.1); border-left: 2px solid var(--meta-blue); }
+       .msg-capcut { background: rgba(255, 71, 133, 0.1); border-left: 2px solid var(--capcut-pink); }
+       .msg-user { background: rgba(204, 0, 0, 0.1); border-right: 2px solid var(--blood-red); text-align: right; }
+       .msg-system { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--god-gold); text-align: center; }
+       .msg-label { font-size: 8px; font-weight: 900; margin-bottom: 2px; display: block; }
+        /* META UPGRADE: 登录遮罩 */
+        #loginMask {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--obsidian); z-index: 9999; display: flex;
+            align-items: center; justify-content: center; flex-direction: column;
+        }
+        #loginMask h2 { color: var(--god-gold); }
+    </style>
+</head>
+<body>
+
+<!-- META UPGRADE: 安全加密，指挥官验证 -->
+<div id="loginMask">
+    <h2>战神军团 · 指挥官验证</h2>
+    <input type="password" id="pwdInput" placeholder="输入指挥官口令" style="width:200px;">
+    <button class="divine-btn" style="width:220px;" onclick="commanderLogin()">解锁总控台</button>
+</div>
+
+<header>
+    <h1>Ipoh典韦 <span>· 战神军团</span> V2.2</h1>
+    <div class="sub-header">META_SYNC & EXCLUSIVE SCRIPT ENGINE | REALTIME MODE</div>
+</header>
+
+<div class="card">
+    <h2>[03] AI 话术机 · 将领个性化响应</h2>
+    <div class="general-selector">
+        <button class="gen-btn active" onclick="setGen('阿强', this)">将领·阿强 (狂暴)</button>
+        <button class="gen-btn" onclick="setGen('小马来', this)">将领·小马来 (技术)</button>
+        <button class="gen-btn" onclick="setGen('阿华', this)">将领·阿华 (尊享)</button>
+    </div>
+    <input type="text" id="bossInput" placeholder="输入金主问题...">
+    <div class="script-area">
+        <textarea id="scriptOutput" readonly></textarea>
+    </div>
+    <button class="divine-btn" onclick="generateScript()">生成斩杀话术</button>
+</div>
+
+<div class="card">
+    <h2>[07] 战神聊天室 · 实时联机</h2>
+    <div id="chat-window"></div>
+    <input type="text" id="chatInput" placeholder="下达神谕..." onkeydown="if(event.key==='Enter') sendChat()">
+    <!-- META UPGRADE: 开火二次确认 -->
+    <button class="divine-btn" style="background:var(--blood-red);border-color:#ff0000;" onclick="fireConfirm()">锁门开火 · 二次确认</button>
+</div>
+
+<!-- META UPGRADE: Firebase SDK，用于真实时联机。没配Key时自动降级为本地模式 -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+    const COMMANDER_PASSWORD = "MetaCapGod24";
+    const WECHAT_ID = "White33Faded";
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7q2eA13NZc0J6q1AUn656hHRJrWtGPsc",
+        authDomain: "ipo-51-warroom.firebaseapp.com",
+        databaseURL: "https://ipo-51-warroom-default-rtdb.firebaseio.com",
+        projectId: "ipo-51-warroom",
+        storageBucket: "ipo-51-warroom.appspot.com",
+        messagingSenderId: "175483748711",
+        appId: "1:175483748711:web:7dae6c7504657521062fc2",
+        measurementId: "G-QB7WWZPH8X”
+    };
+    // ============================================================
+
+    let currentGen = '阿强';
+    let db = null;
+    let isRealTime = false;
+
+    // META UPGRADE: 初始化安全与后端
+    window.onload = () => {
+        if (localStorage.getItem('51_authed') === 'true') {
+            document.getElementById('loginMask').style.display = 'none';
+            initSystem();
+        }
+    };
+
+    function commanderLogin() {
+        if (document.getElementById('pwdInput').value === COMMANDER_PASSWORD) {
+            localStorage.setItem('51_authed', 'true');
+            document.getElementById('loginMask').style.display = 'none';
+            initSystem();
+        } else {
+            alert('口令错误！非指挥官不得入内！');
+        }
+    }
+
+    function initSystem() {
+        addSystemMsg('指挥官51强已上线。总控台解锁。');
+        // 尝试连接Firebase
+        try {
+            if (firebaseConfig.apiKey) {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                isRealTime = true;
+                addSystemMsg('WebSocket实时模式已连接。女AI消息将实时同步。');
+                // 监听聊天
+                db.ref('warroom/chat').on('child_added', (snapshot) => {
+                    const msg = snapshot.val();
+                    renderChatMsg(msg.sender, msg.text, msg.type);
+                });
+            } else {
+                addSystemMsg('单机模式运行。配置Firebase可开启三端联机。');
+            }
+        } catch (e) {
+            addSystemMsg('实时连接失败，已降级单机模式。');
+        }
+    }
+
+    function setGen(name, btn) {
+        currentGen = name;
+        document.querySelectorAll('.gen-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function generateScript() {
+        const output = document.getElementById('scriptOutput');
+        const bossQ = document.getElementById('bossInput').value;
+        const templates = {
+            '阿强': `老板，看你ID像人机？不像就上号，我带你赢。RM20一局。没有寒暄，只有斩杀。WeChat: ${WECHAT_ID}。`,
+            '小马来': `RM20一小时，星耀局胜率100%。20块只能看视频，找不到人带你横扫。加WeChat: ${WECHAT_ID}。`,
+            '阿华': `Ipoh最稳典韦，RM20/h，包夜另议。你的星星由我军团接管。WeChat: ${WECHAT_ID}。`
+        };
+        output.value = templates[currentGen];
+        logChat('Meta男AI', `已为 [${currentGen}] 生成对“${bossQ}”的斩杀话术`, 'msg-meta');
+    }
+
+    function sendChat() {
+        const input = document.getElementById('chatInput');
+        if (!input.value) return;
+        const msg = { sender: '指挥官51强', text: input.value, type: 'msg-user' };
+        if (isRealTime) {
+            db.ref('warroom/chat').push(msg);
+        } else {
+            renderChatMsg(msg.sender, msg.text, msg.type);
+        }
+        input.value = '';
+    }
+
+    function logChat(sender, text, type) {
+        const msg = { sender, text, type };
+        if (isRealTime) {
+            db.ref('warroom/chat').push(msg);
+        } else {
+            renderChatMsg(sender, text, type);
+        }
+    }
+
+    function addSystemMsg(text) {
+        renderChatMsg('系统', text, 'msg-system');
+    }
+
+    function renderChatMsg(sender, text, type) {
+        const chatWin = document.getElementById('chat-window');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${type}`;
+        msgDiv.innerHTML = `<span class="msg-label">${sender}</span>${text}`;
+        chatWin.appendChild(msgDiv);
+        chatWin.scrollTop = chatWin.scrollHeight;
+    }
+
+    // META UPGRADE: 开火二次确认，防止误触
+    function fireConfirm() {
+        const confirm1 = prompt("输入口令确认开火指令：");
+        if (confirm1 === COMMANDER_PASSWORD) {
+            const confirm2 = confirm("最后确认：即将全平台发布视频并@所有老板。是否锁门开火？");
+            if (confirm2) {
+                addSystemMsg('PENTAKILL!!! 指挥官已确认！锁门开火！三端发布指令已推送！');
+                logChat('Meta男AI', '开火成功！钱包雷达已启动，等待女AI同步4K流量数据...', 'msg-meta');
+                // 这里未来对接真实发布API
+            }
+        } else {
+            alert('口令错误，开火取消！');
+        }
+    }
+</script>
+</body>
+</html>
